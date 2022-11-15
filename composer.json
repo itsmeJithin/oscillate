@@ -1,0 +1,25 @@
+{
+  "name": "jithin/oscillate",
+  "description": "A stock trading helper",
+  "type": "project",
+  "require": {
+    "php": ">=5.4.0",
+    "respect/validation": "^1.1"
+  },
+  "minimum-stability": "stable",
+  "autoload": {
+    "psr-4": {
+      "com\\oscillate\\": "src/com/oscillate"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "test\\": "test/"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^7",
+    "fzaninotto/faker": "^1.8",
+    "icanhazstring/phpunit-faker-extension": "^0.1.0"
+  }
+}
