@@ -4,7 +4,9 @@
   "type": "project",
   "require": {
     "php": ">=5.4.0",
-    "respect/validation": "^1.1"
+    "respect/validation": "^1.1",
+    "ext-mysqli": "*",
+    "ext-json": "*"
   },
   "minimum-stability": "stable",
   "autoload": {
@@ -18,8 +20,6 @@
     }
   },
   "require-dev": {
-    "phpunit/phpunit": "^7",
-    "fzaninotto/faker": "^1.8",
-    "icanhazstring/phpunit-faker-extension": "^0.1.0"
+    "phpunit/phpunit": "^7"
   }
 }
