@@ -149,13 +149,18 @@ class CompanyService extends BaseService
                     WHERE c.id =$request->companyId AND sp.date BETWEEN '$request->startDate' AND '$request->endDate'
                     ORDER BY sp.date DESC";
             $response->company = $this->executeQueryForObject($sql, false, $this->mapper[CompanyMapper::GET_COMPANY_STOCKS]);
-            $meanAndSd = $this->findSDAndMean($response->company->stocks);
-            $response->mean = $meanAndSd->mean;
-            $response->sd = $meanAndSd->sd;
+
             if (!$response->company || count($response->company->stocks) === 1) {
-                $response->maxProfit = 0;
+                $response->maxProfit = "0.00";
                 $response->tradedStocks = [];
+                $response->mean = "0.00";
+                $response->sd = "0.00";
                 return $response;
+            }
+            if (count($response->company->stocks)) {
+                $meanAndSd = $this->findSDAndMean($response->company->stocks);
+                $response->mean = $meanAndSd->mean;
+                $response->sd = $meanAndSd->sd;
             }
             $tradeResponse = $this->findMaxProfit(0, count($response->company->stocks) - 1, $response->company->stocks);
             $response->maxProfit = $tradeResponse->maxProfit;

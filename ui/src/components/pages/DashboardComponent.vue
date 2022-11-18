@@ -15,7 +15,7 @@
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Track Company</h5>
-              <form id="import-data">
+              <form id="filter-data">
                 <div class="row mb-3">
                   <div class="col-4">
                     <label for="company-name" class="col-form-label">Company</label>
@@ -65,6 +65,18 @@
           </div>
         </div>
       </div>
+      <div class="row hidden" v-if="!companyData" id="no-data-view">
+        <div class="col-12">
+          <div class="card top-selling overflow-auto">
+            <div class="card-body p-3 text-center">
+              <h5 class="text-muted">No data available</h5>
+              <span class="text-muted">
+                No details available for the given input. Try again with different values.
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   </div>
 </template>
@@ -111,7 +123,15 @@ export default {
           })
     },
     reset() {
-
+      this.tradedStocks = [];
+      this.maxProfit = 0;
+      this.mean = 0;
+      this.sd = 0;
+      this.companyData = null
+      this.selectedCompany = "";
+      this.startDate = "";
+      this.endDate = "";
+      $('#filter-data')[0].reset()
     },
     upload() {
       if (!this.selectedCompany) {
@@ -123,6 +143,7 @@ export default {
         return;
       }
       $('#submit-btn').loading();
+      $('#no-data-view').addClass("hidden");
       const data = {
         "startDate": this.startDate,
         "endDate": this.endDate,
@@ -143,11 +164,13 @@ export default {
               this.maxProfit = responseData.data.maxProfit;
               this.mean = responseData.data.mean;
               this.sd = responseData.data.sd;
+              $('#no-data-view').removeClass("hidden");
             } else {
               toastr.error(responseData.message);
             }
           })
           .catch(() => {
+            $('#no-data-view').removeClass("hidden");
             $('#submit-btn').resetLoading();
             toastr.error("Error occurred while fetching the details. Try again later");
           })

@@ -743,6 +743,9 @@ h6 {
     margin-right: 10px;
     color:#899bbd;
 }
+.hidden{
+    display: none !important;
+}
 
 .sidebar-nav .nav-link.collapsed {
     color: #4154f1;
