@@ -5,6 +5,9 @@ namespace com\oscillate\core\service;
 
 
 use com\oscillate\core\dto\Company;
+use com\oscillate\core\dto\MaxProfitResponse;
+use com\oscillate\core\dto\StockPrice;
+use com\oscillate\core\dto\Trade;
 use com\oscillate\core\exception\CoreException;
 use com\oscillate\core\mapper\CompanyMapper;
 use com\oscillate\core\request\CreateCompanyRequest;
@@ -137,10 +140,111 @@ class CompanyService extends BaseService
                     WHERE c.id =$request->companyId
                     ORDER BY sp.date DESC";
             $response->company = $this->executeQueryForObject($sql, false, $this->mapper[CompanyMapper::GET_COMPANY_STOCKS]);
+            $meanAndSd = $this->findSDAndMean($response->company->stocks);
+            $response->mean= $meanAndSd->mean;
+            $response->sd= $meanAndSd->sd;
+            if (!$response->company || count($response->company->stocks) === 1) {
+                $response->maxProfit = 0;
+                $response->tradedStocks = [];
+                return $response;
+            }
+            $tradeResponse = $this->findMaxProfit(0, count($response->company->stocks) - 1, $response->company->stocks);
+            $response->maxProfit = $tradeResponse->maxProfit;
+            $response->tradedStocks = $tradeResponse->tradedStocks;
         } catch (\Exception $e) {
             throw new CoreException($e->getMessage(), $e->getCode());
         }
         return $response;
     }
 
+    /**
+     * calculating the maximum profit by finding the best day to buy and sell stocks
+     *
+     * @param integer $from
+     * @param integer $to
+     * @param StockPrice[] $stocks
+     * @return MaxProfitResponse
+     * @throws CoreException
+     */
+    private function findMaxProfit($from, $to, $stocks)
+    {
+        $stocks = array_reverse($stocks);
+        $response = new MaxProfitResponse();
+        $tradeStocks = [];
+        $i = $from;
+        try {
+            while ($i <= $to) {
+                /**
+                 * Step 1: Finding the minimum stock price
+                 */
+                while (($i < $to) && ($stocks[$i + 1]->price <= $stocks[$i]->price))
+                    $i++;
+                /**
+                 * Step 2: If minimum stock price is at the end of array we can skip the profit calculation
+                 */
+                if ($i == $to) {
+                    $response->maxProfit = 0;
+                    $response->tradedStocks = [];
+                    break;
+                }
+                /**
+                 * Step 3: Considering that i(th) stock as purchased
+                 */
+                $trade = new Trade();
+                $trade->boughtPrice = $stocks[$i]->price;
+                $trade->boughtOn = $stocks[$i]->date;
+                $trade->numberOfStocks = 200;
+                /**
+                 * Step 4: Incrementing the value of i
+                 */
+                $i++;
+                /**
+                 * Step 5: Checking i is less than size of the array and checking price of i(th) stock is less than (i-1)th stock
+                 * and finding the maximum price
+                 */
+                while (($i < $to + 1) && ($stocks[$i]->price >= $stocks[$i - 1]->price))
+                    $i++;
+                /**
+                 * Step 6: Maximum price of the stock will be in (i-1)th position and considering it as sold
+                 */
+                $trade->soldPrice = $stocks[$i - 1]->price;
+                $trade->soldOn = $stocks[$i - 1]->date;
+                $tradeStocks[] = $trade;
+            }
+            if (count($tradeStocks) > 0) {
+                $maxProfit = 0;
+                foreach ($tradeStocks as $stock) {
+                    $maxProfit += ($stock->soldPrice * $stock->numberOfStocks) - ($stock->boughtPrice * $stock->numberOfStocks);
+                }
+
+                $response->maxProfit = $maxProfit;
+                $response->tradedStocks = $tradeStocks;
+            }
+
+            return $response;
+        } catch (\Exception $e) {
+            throw new CoreException($e->getMessage(), $e->getMessage());
+        }
+    }
+
+    /**
+     * @param StockPrice[] $stocks
+     */
+    private function findSDAndMean($stocks)
+    {
+        $totalPrice = 0;
+        $sd = 0;
+        $response = new \stdClass();
+        for ($i = 0; $i < count($stocks); $i++) {
+            $totalPrice += $stocks[$i]->price;
+        }
+        $mean = $totalPrice / count($stocks);
+        for ($i = 0; $i < count($stocks); $i++) {
+            $sd += pow($stocks[$i]->price - $mean, 2);
+        }
+        $response->sd = round(sqrt($sd / count($stocks)),2);
+        $response->mean = round($mean,2);
+        return $response;
+
+    }
 }

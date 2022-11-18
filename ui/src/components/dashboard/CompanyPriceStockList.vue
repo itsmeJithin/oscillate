@@ -1,53 +1,19 @@
 <template>
   <div class="card-body">
     <h5 class="card-title">Stock prices between {{ startDate }} and {{ endDate }}</h5>
-    <p>Add <code>.table-sm</code> to make any <code>.table</code> more compact by cutting all cell padding in half.</p>
-    <!-- Small tables -->
     <table class="table table-sm">
       <thead>
       <tr>
         <th scope="col">#</th>
-        <th scope="col">Name</th>
-        <th scope="col">Position</th>
-        <th scope="col">Age</th>
-        <th scope="col">Start Date</th>
+        <th scope="col">date</th>
+        <th scope="col">Price</th>
       </tr>
       </thead>
       <tbody>
-      <tr>
-        <th scope="row">1</th>
-        <td>Brandon Jacob</td>
-        <td>Designer</td>
-        <td>28</td>
-        <td>2016-05-25</td>
-      </tr>
-      <tr>
-        <th scope="row">2</th>
-        <td>Bridie Kessler</td>
-        <td>Developer</td>
-        <td>35</td>
-        <td>2014-12-05</td>
-      </tr>
-      <tr>
-        <th scope="row">3</th>
-        <td>Ashleigh Langosh</td>
-        <td>Finance</td>
-        <td>45</td>
-        <td>2011-08-12</td>
-      </tr>
-      <tr>
-        <th scope="row">4</th>
-        <td>Angus Grady</td>
-        <td>HR</td>
-        <td>34</td>
-        <td>2012-06-11</td>
-      </tr>
-      <tr>
-        <th scope="row">5</th>
-        <td>Raheem Lehner</td>
-        <td>Dynamic Division Officer</td>
-        <td>47</td>
-        <td>2011-04-19</td>
+      <tr v-for=" (stock,index) in company.stocks" :key="stock.id">
+        <th scope="row">{{ index + 1 }}</th>
+        <td>{{ stock.date }}</td>
+        <td>{{ stock.price }}</td>
       </tr>
       </tbody>
     </table>

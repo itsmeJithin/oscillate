@@ -4,19 +4,17 @@
       <h1>Dashboard</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
           <li class="breadcrumb-item active">Dashboard</li>
         </ol>
       </nav>
     </div>
-    <section class="section">
+    <section class="section dashboard">
       <div class="row">
         <div class="col-lg-12">
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Track Company</h5>
-
-              <!-- Horizontal Form -->
               <form id="import-data">
                 <div class="row mb-3">
                   <div class="col-4">
@@ -50,14 +48,20 @@
           </div>
         </div>
       </div>
-      <div class="row">
+      <StatisticsCards v-if="companyData" :mean="mean" :sd="sd" :profit="maxProfit"/>
+      <div class="row" v-if="companyData">
+        <div class="col-12">
+          <div class="card top-selling overflow-auto">
+            <div class="card-body pb-0">
+              <h5 class="card-title">Top Trading <span>| between {{ startDate }} and {{ endDate }}</span></h5>
+              <StockAnalysisReport :start-date="startDate" :end-date="endDate" :traded-stocks="tradedStocks"
+                                   :max-profit="maxProfit"/>
+            </div>
+          </div>
+        </div>
         <div class="col-12">
           <div class="card">
-            <div class="card-body">
-              <template v-if="companyData">
-                <CompanyPriceStockList :start-date="startDate" :end-date="endDate"/>
-              </template>
-            </div>
+            <CompanyPriceStockList :start-date="startDate" :end-date="endDate" :company="companyData"/>
           </div>
         </div>
       </div>
@@ -67,18 +71,25 @@
 
 <script>
 import CompanyPriceStockList from "@/components/dashboard/CompanyPriceStockList";
+import StockAnalysisReport from "@/components/dashboard/StockAnalysisReport";
+import StatisticsCards from "@/components/dashboard/StatisticsCards";
 
 const toastr = window.toastr;
+const $ = window.jQuery;
 export default {
   name: "DashboardComponent",
-  components: {CompanyPriceStockList},
+  components: {StatisticsCards, CompanyPriceStockList, StockAnalysisReport},
   data() {
     return {
       startDate: "",
       endDate: "",
       companies: [],
       selectedCompany: "",
-      companyData: null
+      companyData: null,
+      tradedStocks: [],
+      maxProfit: 0,
+      mean: 0,
+      sd: 0
     }
   },
   mounted() {
@@ -103,6 +114,15 @@ export default {
 
     },
     upload() {
+      if (!this.selectedCompany) {
+        toastr.error("Select a company");
+        return;
+      }
+      if (this.startDate === "" || this.endDate === "") {
+        toastr.error("Select a valid date range");
+        return;
+      }
+      $('#submit-btn').loading();
       const data = {
         "startDate": this.startDate,
         "endDate": this.endDate,
@@ -114,15 +134,21 @@ export default {
       this.$axios.post('http://localhost/dashboard.php?action=track-data&XDEBUG_SESSION_START=XDEBUG_ECLIPSE',
           data, {headers: headers})
           .then(response => {
+            $('#submit-btn').resetLoading();
             const responseData = response.data;
             console.log(responseData);
             if (responseData.success) {
-              this.companyData = responseData.data;
+              this.companyData = responseData.data.company;
+              this.tradedStocks = responseData.data.tradedStocks;
+              this.maxProfit = responseData.data.maxProfit;
+              this.mean = responseData.data.mean;
+              this.sd = responseData.data.sd;
             } else {
               toastr.error(responseData.message);
             }
           })
           .catch(() => {
+            $('#submit-btn').resetLoading();
             toastr.error("Error occurred while fetching the details. Try again later");
           })
 
