@@ -40,6 +40,7 @@ class AddCompanyStocksService extends BaseService
 
     /**
      * @param AddNewStockRequest $request
+     * @return int|Object
      * @throws CoreException
      */
     public function addNewCompanyStock(AddNewStockRequest $request)
@@ -48,7 +49,7 @@ class AddCompanyStocksService extends BaseService
         try {
             $sql = "INSERT INTO stock_prices (company_id, price, date, created_at, updated_at) 
                     VALUES ($request->companyId,$request->price,'$request->date',UTC_TIMESTAMP(),UTC_TIMESTAMP())";
-            $this->executeQuery($sql);
+            return $this->executeQueryForObject($sql, true);
         } catch (\Exception $e) {
             throw new CoreException($e->getMessage(), $e->getCode());
         }

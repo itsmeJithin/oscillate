@@ -210,7 +210,7 @@ class MySQLQuery implements IMySQLConnector
                 $errorCode = mysqli_errno($this->connection);
                 break;
         }
-        return new SQLException($errorCode, $errorMessage);
+        return new SQLException($errorMessage, $errorCode);
     }
 
     /**

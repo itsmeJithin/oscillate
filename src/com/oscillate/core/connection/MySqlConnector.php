@@ -55,8 +55,6 @@ class MySqlConnector
     public function getConnection()
     {
         if ($this->connection == NULL) {
-            error_log("DB CONFIG");
-            error_log($this->DB_HOST);
             if (empty($this->DB_PASSWORD) || empty($this->DB_USER) || empty($this->DB_PASSWORD) || empty($this->DB_NAME)) {
                 throw new CoreException(CoreException::DB_CONFIG_NOT_SET, "DB configuration connection variables not set properly");
             }

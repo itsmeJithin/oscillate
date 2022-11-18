@@ -50,6 +50,8 @@ class CompanyService extends BaseService
     }
 
     /**
+     * creating company if company not exist in the table
+     *
      * @param CreateCompanyRequest $request
      * @return Object|integer
      * @throws CoreException
@@ -58,6 +60,9 @@ class CompanyService extends BaseService
     {
         $request = $this->realEscapeObject($request);
         try {
+            if (empty($request->name)) {
+                throw new CoreException("Invalid company name given", CoreException::INVALID_COMPANY_NAME);
+            }
             $companyId = $this->getCompanyIdByName($request->name);
             if ($companyId)
                 return $companyId;
@@ -70,11 +75,13 @@ class CompanyService extends BaseService
     }
 
     /**
+     * internal function to get company id from name
+     *
      * @param $name
      * @return integer
      * @throws CoreException
      */
-    public function getCompanyIdByName($name)
+    private function getCompanyIdByName($name)
     {
         $sql = "SELECT id FROM companies WHERE name ='$name'";
         try {
@@ -85,6 +92,8 @@ class CompanyService extends BaseService
     }
 
     /**
+     * updating company details
+     *
      * @param UpdateCompanyRequest $request
      * @throws CoreException
      */
@@ -141,8 +150,8 @@ class CompanyService extends BaseService
                     ORDER BY sp.date DESC";
             $response->company = $this->executeQueryForObject($sql, false, $this->mapper[CompanyMapper::GET_COMPANY_STOCKS]);
             $meanAndSd = $this->findSDAndMean($response->company->stocks);
-            $response->mean= $meanAndSd->mean;
-            $response->sd= $meanAndSd->sd;
+            $response->mean = $meanAndSd->mean;
+            $response->sd = $meanAndSd->sd;
             if (!$response->company || count($response->company->stocks) === 1) {
                 $response->maxProfit = 0;
                 $response->tradedStocks = [];
@@ -242,8 +251,8 @@ class CompanyService extends BaseService
         for ($i = 0; $i < count($stocks); $i++) {
             $sd += pow($stocks[$i]->price - $mean, 2);
         }
-        $response->sd = round(sqrt($sd / count($stocks)),2);
-        $response->mean = round($mean,2);
+        $response->sd = round(sqrt($sd / count($stocks)), 2);
+        $response->mean = round($mean, 2);
         return $response;
 
     }

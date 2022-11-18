@@ -16,7 +16,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "test\\": "test/"
+      "test\\": "test/src"
     }
   },
   "require-dev": {
