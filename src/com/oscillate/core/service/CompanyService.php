@@ -146,7 +146,7 @@ class CompanyService extends BaseService
                     sp.id as stock_id,sp.date as stock_date,sp.price as stock_price
                     FROM companies c 
                     INNER JOIN stock_prices sp on c.id = sp.company_id
-                    WHERE c.id =$request->companyId
+                    WHERE c.id =$request->companyId AND sp.date BETWEEN '$request->startDate' AND '$request->endDate'
                     ORDER BY sp.date DESC";
             $response->company = $this->executeQueryForObject($sql, false, $this->mapper[CompanyMapper::GET_COMPANY_STOCKS]);
             $meanAndSd = $this->findSDAndMean($response->company->stocks);

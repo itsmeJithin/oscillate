@@ -14,12 +14,17 @@ class ResultHandler
      */
     public static function success($msg = null, $data = "")
     {
-        return json_encode(array(
-            'success' => true,
-            'message' => $msg,
-            'data' => $data,
-            'errorCode' => NULL
-        ));
+        try {
+            return json_encode(array(
+                'success' => true,
+                'message' => $msg,
+                'data' => $data,
+                'errorCode' => NULL
+            ));
+        }catch (\Exception $e){
+            $a=$e;
+        }
+
     }
 
     /**

@@ -16,16 +16,18 @@ switch ($action) {
         }
     case "track-data":
         try {
-            $startDate = $_POST['startDate'];
-            $endDate = $_POST['endDate'];
-            $startDate = date('Y-m-d', strtotime($startDate));
-            $endDate = date('Y-m-d', strtotime($endDate));
-            $request = new GetCompanyStockRequest();
-            $request->endDate = $endDate;
-            $request->startDate = $startDate;
-            $request->companyId = $_POST['companyId'];
-            $response = CompanyService::getInstance()->getCompanyStocks($request);
-            exit(ResultHandler::success("Details fetched successfully", $response));
+            if (isset($_POST['companyId'])&&isset($_POST['startDate'])&&isset($_POST['endDate'])) {
+                $startDate = $_POST['startDate'];
+                $endDate = $_POST['endDate'];
+                $startDate = date('Y-m-d', strtotime($startDate));
+                $endDate = date('Y-m-d', strtotime($endDate));
+                $request = new GetCompanyStockRequest();
+                $request->endDate = $endDate;
+                $request->startDate = $startDate;
+                $request->companyId = $_POST['companyId'];
+                $response = CompanyService::getInstance()->getCompanyStocks($request);
+                exit(ResultHandler::success("Details fetched successfully", $response));
+            }
         } catch (\Exception $e) {
             exit(ResultHandler::failed($e->getMessage(), $e->getCode()));
         }

@@ -5,6 +5,7 @@ import router from "@/router";
 Vue.config.productionTip = false
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
 axios.defaults.withCredentials = true;
+axios.defaults.baseURL="http://localhost/";
 Vue.prototype.$axios = axios;
 new Vue({
   router,

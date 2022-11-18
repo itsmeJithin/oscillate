@@ -97,7 +97,7 @@ export default {
   },
   methods: {
     getAllCompany() {
-      this.$axios.get('http://localhost/dashboard.php?action=get-basic-details&XDEBUG_SESSION_START=XDEBUG_ECLIPSE')
+      this.$axios.get('dashboard.php?action=get-basic-details&XDEBUG_SESSION_START=XDEBUG_ECLIPSE')
           .then(response => {
             const responseData = response.data;
             if (responseData.success) {
@@ -131,7 +131,7 @@ export default {
       const headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
-      this.$axios.post('http://localhost/dashboard.php?action=track-data&XDEBUG_SESSION_START=XDEBUG_ECLIPSE',
+      this.$axios.post('dashboard.php?action=track-data&XDEBUG_SESSION_START=XDEBUG_ECLIPSE',
           data, {headers: headers})
           .then(response => {
             $('#submit-btn').resetLoading();
