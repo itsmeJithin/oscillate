@@ -13,6 +13,13 @@ Web based tool where user can upload the list (CSV File) and input which company
 - Admin panel created with responsive UI
 - Vue JS is used to create the front end application
 
+##Screenshots
+![ss1](https://user-images.githubusercontent.com/31924948/202787524-48a6736f-97cb-4a28-a0c2-7f101b790233.png)
+
+![ss2](https://user-images.githubusercontent.com/31924948/202787569-66740e2e-460e-4c8b-80cd-4d68818090ca.png)
+
+![ss3](https://user-images.githubusercontent.com/31924948/202787597-1f6b0cd6-a3f2-4b69-9b60-09a681bc36b2.png)
+
 ## Prerequisites
 * PHP 7+
 * Node JS
